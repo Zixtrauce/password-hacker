@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayDeque;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,33 +12,28 @@ public class Main {
         //initialize required variables
         String ip_address;
         int port;
-        String message_for_sending;
 
         //process arguments
         ip_address = args[0];
         port = Integer.parseInt(args[1]);
-        message_for_sending = args[2];
 
-        try (
 
-            //create new socket and datastream to recieve input
-            Socket socket = new Socket(ip_address, port);
-            DataInputStream input = new DataInputStream(socket.getInputStream());
-            DataOutputStream output = new DataOutputStream(socket.getOutputStream())
 
-          ) {
-            //send message from commandline argument to server
-            output.writeUTF(message_for_sending);
-            //read reply from server
-            String receivedMsg = input.readUTF();
+        //establish ConnectionLink & create initial deque
+        ConnectionLink activeConnection = new ConnectionLink(ip_address, port);
+        ArrayDeque<String> testingDeque = new ArrayDeque<String>();
+        testingDeque.add("");
 
-            //output received message
-            System.out.println(receivedMsg);
+        //run the bruteforcer & grab the password returned
+        SimpleBruteForcer attack = new SimpleBruteForcer(testingDeque, activeConnection);
+        String password = attack.BruteForce();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        //print the password
+        System.out.println(password);
+
+
         }
 
 
-    }
 }
+
